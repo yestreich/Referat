@@ -1,0 +1,322 @@
+---
+title: "Untitled"
+output: pdf_document
+date: "2023-08-09"
+---
+
+# Git & GitHub
+
+Git :
+
+-   Versionsverwaltung-System, das Entwicklern erlaubt Veränderungen in ihrem Code zu tracken.
+
+-   Von der Data Science zusätzlich genutzt zum Managen der Dateien von Analyse-Projekten (Data, Plots, Reports, Source Code)
+
+-   Großes Plus : Code-Kollaboration und Kommunikation mit anderen Menschen
+
+GitHub :
+
+-   Hosting-Service für Git-Ordner (**repositories**), Code-Sharing, etc
+
+-   Erlaubt andere Nutzer deinen Code zu sehen, mit dir zu syncen, evtl. Code ändern
+
+-   Selbst wenn man nicht vorhat zu teilen, lohnt es sich um die lokalen repositories nicht zu verschandeln
+
+#### Warum?
+
+Teilen!
+
+-   Dein Code kann gesehen werden, und sogar kopiert werden
+
+Änderungen mitbekommen
+
+-   Veränderungen wichtiger Projekte können bemerkt werden
+
+-   Projekte können **forked** werden : Eigene Kopie für private Änderungen
+
+Kollaboration:
+
+-   Beteiligte können gleichzeitig am Code arbeiten und Versionen werden gesynced.
+
+-   Ähnlichkeiten zu Google Doc:
+
+    Ein Dokument in der Cloud. Jeder kann editieren, kommentieren, Änderungen vorschlagen -\> direkt für alle verfügbar
+
+Versionskontrolle !
+
+-   Archiv aller Änderungen
+
+-   Möglichkeiten alte Versionen aufzugreifen
+
+-   Möglichkeiten **branches** zu generieren um Sachen auszuprobieren und evtl. zu **mergen**
+
+# R mit Git und GitHub verbinden
+
+-   Git herunterladen und installieren :
+
+    -   <https://git-scm.com/>
+
+    -   <http://rafalab.dfci.harvard.edu/dsbook/accessing-the-terminal-and-installing-git.html>
+
+-   GitHub-Account erstellen
+
+-   Git Bash als Default-Shell einstellen
+
+![](R_git.png)
+
+-   Git in 3 Schritten sagen wer wir sind
+
+```{r, eval = FALSE}
+# Im neuen Git-Terminal in R GitHub-Daten eingeben
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com" # !email, nicht mail!
+```
+
+Git-Exe in R angeben:
+
+![](R_git2.png)
+
+Schlüssel generieren um nicht immer GitHob-Passwort eingeben zu müssen:
+
+![](R-git3.png)
+
+### GitHub repositories
+
+Genereller Gedanke : Es gibt zwei Kopien des Codes. Eine lokal auf dem PC, eine auf GitHub.
+
+Die GitHub-Kopie ist die *main*-Kopie. Alle Beteiligten *syncen* zu dieser Kopie.
+
+-   Einloggen
+
+-   Neuen Ordner anlegen
+
+![](github.png)
+
+-   Name und Öffentlichkeitsstatus wählen
+
+![](github2.png)
+
+### Klonen
+
+-   Auf Computer klonen, zum editieren und syncen
+
+    -   Klonen : Kein Download der Dateien, sondern kopieren der Git-Struktur
+
+![](github3.png)
+
+```{r, eval = FALSE}
+# Klonen
+pwd
+mkdir git-example
+cd git-example
+git clone https://github.com/yestreich/Referat.git
+cd murders
+
+# Alternativ für ein volle Struktur
+pwd
+mkdir git-example
+cd git-example
+git clone https://github.com/rairizarry/murders.git
+cd murders
+
+#Cloning into 'murders'...
+#remote: Enumerating objects: 26, done.
+#remote: Counting objects: 100% (7/7), done.
+#remote: Compressing objects: 100% (7/7), done.
+#Receiving objects: 100% (26/26), 52.05 KiB | 17.35 MiB/s, done.
+
+#Resolving deltas: 100% (3/3), done.
+```
+
+![](cline.png)
+
+### Main actions in Git (oder : Wie man vom Klon zurück online kommt)
+
+**pull** : Änderungen vom remote-Ordner (GitHub) ziehen
+
+**add** : Dateien hinzufügen aka. *stage*
+
+**commit** : Veränderungen im lokalen Ordner
+
+**push** : Veränderungen im remote-Ordner durchführen
+
+#### Working Directory
+
+Ändert man Dateien mit einem Editor (zb. RStudio) ändert man sie nur im Working Directory.
+
+```{r, eval = FALSE}
+
+git status
+
+#> On branch master
+#> Your branch is up to date with 'origin/master'.
+#> 
+#> nothing to commit, working tree clean
+```
+
+#### Editieren (zb. mit R)
+
+-   Wir wollen nicht jede kleine Änderung syncen
+
+-   Erst wenn wir es hochladen wollen, soll es Änderungen *tracken*
+
+-   Edits in *staging area* werden nicht getracked
+
+Beispiel: (in Wirklichkeit würde diese Änderung mit RStudio gemacht werden)
+
+```{r, eval = FALSE}
+echo "test" >> new-file.txt # Neue Datei generieren
+
+echo "temporary" >> tmp.txt # Neue Datei generieren, wollen wir nicht tracken
+```
+
+#### staging
+
+Die Datei, die wir hinzufügen wollen muss "gestaged" werden
+
+```{r, eval = FALSE}
+git add new-file.txt
+# > warning: in the working copy of 'new-file.txt', LF will be replaced by CRLF the next time Git touches it
+```
+
+![](stage.png)
+
+Was sagt der Status?
+
+```{r, eval = FALSE}
+git status
+#> On branch master
+#> Your branch is up to date with 'origin/master'.
+#> 
+#> Changes to be committed:
+#>   (use "git restore --staged <file>..." to unstage)
+#>  new file:   new-file.txt
+#> 
+#> Untracked files:
+#>   (use "git add <file>..." to include in what will be committed)
+#>  tmp.txt
+```
+
+#### Commit
+
+Da unsere Datei gestaged ist, wird sie beim nexten **commit** in den lokalen Ordner hinzugefügt
+
+```{r, eval = FALSE}
+git commit -m "adding a new file" 
+# [master e57f2d8] adding a new file
+# 1 file changed, 2 insertions(+)
+# create mode 100644 new-file.txt
+
+git status
+```
+
+![](commit.png)
+
+Jetzige Änderungen am Dokument ändern nur das Dokument im working directory.
+
+Das **staging** kann auch übersprungen werden, indem der Dateiname im commit genannt wird.
+
+```{r, eval = FALSE}
+
+echo "adding a second line" >> new-file.txt             # Änderung
+git commit -m "minor change to new-file" new-file.txt   # commit
+```
+
+Man kann auch alle Veränderungen einsehen:
+
+```{r}
+git log new-file.txt
+
+#commit b748f85dfc84254ef653bbba6d99c2cbb40336b6 (HEAD -> master)
+#Author: yestreich <yannickestreich@web.de>
+#Date:   Thu Aug 10 09:47:35 2023 +0200
+
+#    minor change to new-file
+
+#commit e57f2d8a1add25ed537e160c3d8d4f0e805fefa8
+#Author: yestreich <yannickestreich@web.de>
+#Date:   Wed Aug 9 17:33:54 2023 +0200
+
+#    adding a new file
+```
+
+#### Push
+
+Mit dem push wird die Änderungen der Datei vom lokalen Ordner in den "Online"-Ordner geschoben. Quasi ein Update in der Cloud.
+
+```{r, eval = FALSE}
+
+git push # Funktioniert nicht mit murders, weil ich keine Rechte dazu habe (nicht mein repository)
+```
+
+![](push.png)
+
+#### Fetch
+
+Bei kollaborativen Projekten ändert sich die Datei ständig. Um seine lokale Ordner zu aktualisieren gibt es fetch.
+
+```{r, eval = FALSE}
+git fetch
+```
+
+![](fetch.png)
+
+#### Merge
+
+Um sie dann in den working directory und staging area zu bekommen/kopieren, um sie zu bearbeiten muss man mergen.
+
+```{r, eval = FALSE}
+git merge
+```
+
+![](merge.png)
+
+#### Pull (Fetch + Merge)
+
+Fetch und Merge lassen sich kombinieren:
+
+```{r, eval = FALSE}
+git pull
+```
+
+![](pull.png)
+
+## Git-Ordner initialisieren
+
+Meistens startet ein Ordner auf dem lokalen Computer (und nicht durch Klonen).
+
+Angenommen man hat schon ein Projekt-Ordner und wollen ihn auf GitHub kollaborativ machen -\> **Initialisieren**
+
+-   Dafür neuen Ordner in GitHub erstellen (wir nutzen den Referats-Ordner vom Anfang)
+
+-   In den lokalen Ordner wechseln (murders):
+
+```{r, eval = FALSE}
+cd ~/murders
+```
+
+-   Ordner initialiseren: Ordner wird zu Git-Ordner und startet tracking
+
+```{r, eval = FALSE}
+git init
+# > Reinitialized existing Git repository in Y:/Dokumente/Weiterbildung_DataScience/05_Big Data Management mit R/git-murder/murders/.git/
+```
+
+-   Adding, Commiting : lokaler Ordner mit GitHub-Ordner verbinden indem irgendeine Datei commited wird
+
+```{r, eval = FALSE}
+git add README.txt
+git commit -m "First commit. Adding README.txt file just to get started"
+```
+
+-   Remote Add
+
+```{r, eval = FALSE}
+git remote add origin `https://github.com/yestreich/Referat.git`
+```
+
+-   Push
+
+```{r, eval = FALSE}
+git push
+```
